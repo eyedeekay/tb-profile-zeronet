@@ -1,0 +1,42 @@
+#!/bin/bash
+
+## Copyright (C) 2018 - 2018 eyedeekay
+## See the file COPYING for copying conditions.
+
+export SCRIPTNAME="$(basename "$BASH_SOURCE")"
+
+export IDENTIFIER="zeronetbrowser"
+
+ICON="/usr/share/icons/anon-icon-pack/tbupdate.ico"
+
+if [ ! -d "$HOME/.zeronetb/" ]; then
+    echo "Error, zeronet browser does not appear to be installed(run update-zeronetbrowser)"
+    exit 1
+fi
+
+if [ ! -d "$HOME/.zeronetb/profile.zeronet" ]; then
+    cp -r /usr/share/tb-profile-zeronet/profile.zeronet \
+        "$HOME/.zeronetb/profile.zeronet"
+fi
+
+if [ ! -L "$HOME/.zeronetb/zeronet-browser/Browser/TorBrowser/Data/Browser/profile.zeronet" ]; then
+    ln -sf "$HOME/.zeronetb/profile.zeronet" \
+        "$HOME/.zeronetb/zeronet-browser/Browser/TorBrowser/Data/Browser/profile.zeronet"
+fi
+
+cp -f /usr/share/tb-profile-zeronet/start-zeronet-browser "$HOME/.zeronetb/zeronet-browser/Browser/start-zeronet-browser"
+
+cd "$HOME/.zeronetb/zeronet-browser/Browser/" || exit 1
+
+LINK="/usr/share/tb-profile-zeronet/zeronet-info.html" \
+    tb_using_zeronet="--zeronet" \
+    tb_install_folder="zeronetb" \
+    tb_install_folder_dot=".zeronetb" \
+    tb_name="zeronet" \
+    tb_title="ZeroNet Browser" \
+    tb_wiki="ZeroNet_Browser" \
+    tb_browser_name="zeronet-browser" \
+    tb_proxy_name="zeronet" \
+    tb_bin="$IDENTIFIER" \
+    tb_browser_runner="start-zeronet-browser" \
+    tb_settings_folder="zeronetbrowser.d" torbrowser "$@"
